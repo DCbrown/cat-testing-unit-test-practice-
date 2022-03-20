@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import Card from "../Card";
+import userEvents from "@testing-library/user-event"
+import Card from "../Card"
 
 const cardProps = {
   name: "JoJo",
@@ -29,4 +30,31 @@ describe("Card", () => {
     render(<Card {...cardProps} />);
     expect(screen.getByAltText(/kitty/i).src).toBe(cardProps.image.url);
   });
+
+  test("should show outline heart", ()=> {
+    render(<Card {...cardProps} />);
+    expect(screen.queryByAltText(/filled heart/i)).not.toBeInTheDocument();
+    expect(screen.getByAltText(/outlined heart/i)).toBeInTheDocument();
+  })
+
+  test("should show fliied heart", ()=> {
+    render(<Card {...cardProps} favoured={true}/>);
+
+    expect(screen.queryByAltText(/outlined heart/i)).not.toBeInTheDocument();
+    expect(screen.getByAltText(/filled heart/i)).toBeInTheDocument();
+  })
+
+  test("should toggle heart status", ()=> {
+    render(<Card {...cardProps}/>) 
+
+    userEvents.click(screen.getByRole("button"));
+    
+    expect(screen.queryByAltText(/outlined heart/i)).not.toBeInTheDocument();
+    expect(screen.getByAltText(/filled heart/i)).toBeInTheDocument();
+
+    userEvents.click(screen.getByRole("button"));
+
+    expect(screen.queryByAltText(/filled heart/i)).not.toBeInTheDocument();
+    expect(screen.getByAltText(/outlined heart/i)).toBeInTheDocument();
+  })
 });
